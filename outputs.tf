@@ -108,6 +108,26 @@ output "public_subnets_ipv6_cidr_blocks" {
   value       = aws_subnet.public.*.ipv6_cidr_block
 }
 
+output "firewall_subnets" {
+  description = "List of IDs of firewall subnets"
+  value       = aws_subnet.firewall.*.id
+}
+
+output "firewall_subnet_arns" {
+  description = "List of ARNs of firewall subnets"
+  value       = aws_subnet.firewall.*.arn
+}
+
+output "firewall_subnets_cidr_blocks" {
+  description = "List of cidr_blocks of firewall subnets"
+  value       = aws_subnet.firewall.*.cidr_block
+}
+
+output "firewall_subnets_ipv6_cidr_blocks" {
+  description = "List of IPv6 cidr_blocks of firewall subnets in an IPv6 enabled VPC"
+  value       = aws_subnet.firewall.*.ipv6_cidr_block
+}
+
 output "database_subnets" {
   description = "List of IDs of database subnets"
   value       = aws_subnet.database.*.id
@@ -1461,6 +1481,26 @@ output "vpc_flow_log_destination_type" {
 output "vpc_flow_log_cloudwatch_iam_role_arn" {
   description = "The ARN of the IAM role used when pushing logs to Cloudwatch log group"
   value       = local.flow_log_iam_role_arn
+}
+
+output "firewall_arn" {
+  description = "Network Firewall ARN"
+  value       = concat(aws_networkfirewall_firewall.firewall.*.arn, [""])[0]
+}
+
+output "firewall_status" {
+  description = "Network Firewall status of endpoints"
+  value       = concat(aws_networkfirewall_firewall.firewall.*.firewall_status, [""])[0]
+}
+
+output "firewall_firewall_policy" {
+  description = "Network Firewall Policy ARN"
+  value       = concat(aws_networkfirewall_firewall.firewall.*.arn, [""])[0]
+}
+
+output "firewall_logging_id" {
+  description = "Network Firewall Logging id"
+  value       = concat(aws_networkfirewall_logging_configuration.firewall.*.id, [""])[0]
 }
 
 # Static values (arguments)

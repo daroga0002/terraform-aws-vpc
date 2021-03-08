@@ -118,6 +118,12 @@ variable "public_subnet_suffix" {
   default     = "public"
 }
 
+variable "firewall_subnet_suffix" {
+  description = "Suffix to append to public subnets name"
+  type        = string
+  default     = "public-ext"
+}
+
 variable "private_subnet_suffix" {
   description = "Suffix to append to private subnets name"
   type        = string
@@ -150,6 +156,12 @@ variable "elasticache_subnet_suffix" {
 
 variable "public_subnets" {
   description = "A list of public subnets inside the VPC"
+  type        = list(string)
+  default     = []
+}
+
+variable "firewall_subnets" {
+  description = "A list of firewall subnets inside the VPC"
   type        = list(string)
   default     = []
 }
@@ -2261,6 +2273,12 @@ variable "public_subnet_tags" {
   default     = {}
 }
 
+variable "firewall_subnet_tags" {
+  description = "Additional tags for the public subnets"
+  type        = map(string)
+  default     = {}
+}
+
 variable "private_subnet_tags" {
   description = "Additional tags for the private subnets"
   type        = map(string)
@@ -2269,6 +2287,12 @@ variable "private_subnet_tags" {
 
 variable "public_route_table_tags" {
   description = "Additional tags for the public route tables"
+  type        = map(string)
+  default     = {}
+}
+
+variable "firewall_route_table_tags" {
+  description = "Additional tags for the firewall route tables"
   type        = map(string)
   default     = {}
 }
@@ -2389,6 +2413,12 @@ variable "nat_gateway_tags" {
 
 variable "nat_eip_tags" {
   description = "Additional tags for the NAT EIP"
+  type        = map(string)
+  default     = {}
+}
+
+variable "firewall_tags" {
+  description = "Additional tags for the Network Firewall"
   type        = map(string)
   default     = {}
 }
@@ -2813,6 +2843,12 @@ variable "enable_flow_log" {
   default     = false
 }
 
+variable "enable_firewall_log" {
+  description = "Whether or not to enable Network Firewall Logs"
+  type        = bool
+  default     = false
+}
+
 variable "default_security_group_egress" {
   description = "List of maps of egress rules to set on the default security group"
   type        = list(map(string))
@@ -2891,8 +2927,32 @@ variable "flow_log_max_aggregation_interval" {
   default     = 600
 }
 
+variable "firewall_log_traffic_type" {
+  description = "The type of traffic to capture. Valid values: ALERT or FLOW"
+  type        = string
+  default     = "ALERT"
+}
+
+variable "firewall_log_destination_type" {
+  description = "Type of Network Firewall log destination. Can be S3, CloudWatchLogs or KinesisDataFirehose"
+  type        = string
+  default     = "CloudWatchLogs"
+}
+
+variable "firewall_log_destination_arn" {
+  description = "The ARN of the CloudWatch log group or S3 bucket or Kinesis Data Stream where Network Firewall Logs will be pushed. If this ARN is a S3 bucket the appropriate permissions need to be set on that bucket's policy. When create_flow_log_cloudwatch_log_group is set to false this argument must be provided."
+  type        = string
+  default     = ""
+}
+
 variable "create_igw" {
   description = "Controls if an Internet Gateway is created for public subnets and the related routes that connect them."
+  type        = bool
+  default     = true
+}
+
+variable "create_firewall" {
+  description = "Controls if an Networ Firewall is created for public subnets and the related routes that connect them."
   type        = bool
   default     = true
 }

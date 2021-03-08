@@ -264,6 +264,9 @@ No Modules.
 | [aws_nat_gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway) |
 | [aws_network_acl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/network_acl) |
 | [aws_network_acl_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/network_acl_rule) |
+| [aws_networkfirewall_firewall](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_firewall) |
+| [aws_networkfirewall_firewall_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_firewall_policy) |
+| [aws_networkfirewall_logging_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_logging_configuration) |
 | [aws_redshift_subnet_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/redshift_subnet_group) |
 | [aws_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) |
 | [aws_route_table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table) |
@@ -360,6 +363,7 @@ No Modules.
 | create\_egress\_only\_igw | Controls if an Egress Only Internet Gateway is created and its related routes. | `bool` | `true` | no |
 | create\_elasticache\_subnet\_group | Controls if elasticache subnet group should be created | `bool` | `true` | no |
 | create\_elasticache\_subnet\_route\_table | Controls if separate route table for elasticache should be created | `bool` | `false` | no |
+| create\_firewall | Controls if an Networ Firewall is created for public subnets and the related routes that connect them. | `bool` | `true` | no |
 | create\_flow\_log\_cloudwatch\_iam\_role | Whether to create IAM role for VPC Flow Logs | `bool` | `false` | no |
 | create\_flow\_log\_cloudwatch\_log\_group | Whether to create CloudWatch log group for VPC Flow Logs | `bool` | `false` | no |
 | create\_igw | Controls if an Internet Gateway is created for public subnets and the related routes that connect them. | `bool` | `true` | no |
@@ -518,6 +522,7 @@ No Modules.
 | enable\_elasticloadbalancing\_endpoint | Should be true if you want to provision a Elastic Load Balancing endpoint to the VPC | `bool` | `false` | no |
 | enable\_emr\_endpoint | Should be true if you want to provision an EMR endpoint to the VPC | `bool` | `false` | no |
 | enable\_events\_endpoint | Should be true if you want to provision a CloudWatch Events endpoint to the VPC | `bool` | `false` | no |
+| enable\_firewall\_log | Whether or not to enable Network Firewall Logs | `bool` | `false` | no |
 | enable\_flow\_log | Whether or not to enable VPC Flow Logs | `bool` | `false` | no |
 | enable\_git\_codecommit\_endpoint | Should be true if you want to provision an Git Codecommit endpoint to the VPC | `bool` | `false` | no |
 | enable\_glue\_endpoint | Should be true if you want to provision a Glue endpoint to the VPC | `bool` | `false` | no |
@@ -560,6 +565,14 @@ No Modules.
 | events\_endpoint\_subnet\_ids | The ID of one or more subnets in which to create a network interface for CloudWatch Events endpoint. Only a single subnet within an AZ is supported. If omitted, private subnets will be used. | `list(string)` | `[]` | no |
 | external\_nat\_ip\_ids | List of EIP IDs to be assigned to the NAT Gateways (used in combination with reuse\_nat\_ips) | `list(string)` | `[]` | no |
 | external\_nat\_ips | List of EIPs to be used for `nat_public_ips` output (used in combination with reuse\_nat\_ips and external\_nat\_ip\_ids) | `list(string)` | `[]` | no |
+| firewall\_log\_destination\_arn | The ARN of the CloudWatch log group or S3 bucket or Kinesis Data Stream where Network Firewall Logs will be pushed. If this ARN is a S3 bucket the appropriate permissions need to be set on that bucket's policy. When create\_flow\_log\_cloudwatch\_log\_group is set to false this argument must be provided. | `string` | `""` | no |
+| firewall\_log\_destination\_type | Type of Network Firewall log destination. Can be S3, CloudWatchLogs or KinesisDataFirehose | `string` | `"CloudWatchLogs"` | no |
+| firewall\_log\_traffic\_type | The type of traffic to capture. Valid values: ALERT or FLOW | `string` | `"ALERT"` | no |
+| firewall\_route\_table\_tags | Additional tags for the firewall route tables | `map(string)` | `{}` | no |
+| firewall\_subnet\_suffix | Suffix to append to public subnets name | `string` | `"public-ext"` | no |
+| firewall\_subnet\_tags | Additional tags for the public subnets | `map(string)` | `{}` | no |
+| firewall\_subnets | A list of firewall subnets inside the VPC | `list(string)` | `[]` | no |
+| firewall\_tags | Additional tags for the Network Firewall | `map(string)` | `{}` | no |
 | flow\_log\_cloudwatch\_iam\_role\_arn | The ARN for the IAM role that's used to post flow logs to a CloudWatch Logs log group. When flow\_log\_destination\_arn is set to ARN of Cloudwatch Logs, this argument needs to be provided. | `string` | `""` | no |
 | flow\_log\_cloudwatch\_log\_group\_kms\_key\_id | The ARN of the KMS Key to use when encrypting log data for VPC flow logs. | `string` | `null` | no |
 | flow\_log\_cloudwatch\_log\_group\_name\_prefix | Specifies the name prefix of CloudWatch Log Group for VPC flow logs. | `string` | `"/aws/vpc-flow-log/"` | no |
@@ -788,6 +801,14 @@ No Modules.
 | elasticache\_subnets | List of IDs of elasticache subnets |
 | elasticache\_subnets\_cidr\_blocks | List of cidr\_blocks of elasticache subnets |
 | elasticache\_subnets\_ipv6\_cidr\_blocks | List of IPv6 cidr\_blocks of elasticache subnets in an IPv6 enabled VPC |
+| firewall\_arn | Network Firewall ARN |
+| firewall\_firewall\_policy | Network Firewall Policy ARN |
+| firewall\_logging\_id | Network Firewall Logging id |
+| firewall\_status | Network Firewall status of endpoints |
+| firewall\_subnet\_arns | List of ARNs of firewall subnets |
+| firewall\_subnets | List of IDs of firewall subnets |
+| firewall\_subnets\_cidr\_blocks | List of cidr\_blocks of firewall subnets |
+| firewall\_subnets\_ipv6\_cidr\_blocks | List of IPv6 cidr\_blocks of firewall subnets in an IPv6 enabled VPC |
 | igw\_arn | The ARN of the Internet Gateway |
 | igw\_id | The ID of the Internet Gateway |
 | intra\_network\_acl\_arn | ARN of the intra network ACL |
