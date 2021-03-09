@@ -363,7 +363,7 @@ No Modules.
 | create\_egress\_only\_igw | Controls if an Egress Only Internet Gateway is created and its related routes. | `bool` | `true` | no |
 | create\_elasticache\_subnet\_group | Controls if elasticache subnet group should be created | `bool` | `true` | no |
 | create\_elasticache\_subnet\_route\_table | Controls if separate route table for elasticache should be created | `bool` | `false` | no |
-| create\_firewall | Controls if an Networ Firewall is created for public subnets and the related routes that connect them. | `bool` | `true` | no |
+| create\_firewall | Controls if an Networ Firewall is created for public subnets and the related routes that connect them. | `bool` | `false` | no |
 | create\_flow\_log\_cloudwatch\_iam\_role | Whether to create IAM role for VPC Flow Logs | `bool` | `false` | no |
 | create\_flow\_log\_cloudwatch\_log\_group | Whether to create CloudWatch log group for VPC Flow Logs | `bool` | `false` | no |
 | create\_igw | Controls if an Internet Gateway is created for public subnets and the related routes that connect them. | `bool` | `true` | no |

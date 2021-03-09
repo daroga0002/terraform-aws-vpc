@@ -2954,7 +2954,7 @@ variable "create_igw" {
 variable "create_firewall" {
   description = "Controls if an Networ Firewall is created for public subnets and the related routes that connect them."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_egress_only_igw" {

@@ -17,10 +17,10 @@ locals {
     0,
   )
 
-  firewall_endpoints = {
+  firewall_endpoints = var.create_firewall ? {
     for fw in(aws_networkfirewall_firewall.firewall[0].firewall_status[0].sync_states[*]) :
     (fw.availability_zone) => fw.attachment[0].endpoint_id
-  }
+  } : {}
 
   vpce_tags = merge(
     var.tags,
