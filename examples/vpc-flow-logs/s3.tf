@@ -8,9 +8,10 @@ module "vpc_with_flow_logs_s3_bucket" {
 
   cidr = "10.30.0.0/16"
 
-  azs            = ["eu-west-1a"]
-  public_subnets = ["10.30.101.0/24"]
-
+  azs                       = ["eu-west-1a"]
+  public_subnets            = ["10.30.101.0/24"]
+  create_firewall           = true
+  firewall_subnets          = ["10.30.55.0/24"]
   enable_flow_log           = true
   flow_log_destination_type = "s3"
   flow_log_destination_arn  = module.s3_bucket.this_s3_bucket_arn

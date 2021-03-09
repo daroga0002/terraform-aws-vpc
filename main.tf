@@ -17,7 +17,9 @@ locals {
     0,
   )
 
-  firewall_endpoints = var.create_firewall ? {
+  create_firewall = !var.enable_ipv6 && var.create_firewall
+
+  firewall_endpoints = local.create_firewall ? {
     for fw in(aws_networkfirewall_firewall.firewall[0].firewall_status[0].sync_states[*]) :
     (fw.availability_zone) => fw.attachment[0].endpoint_id
   } : {}
@@ -206,7 +208,7 @@ resource "aws_default_route_table" "default" {
 # Publiс routes
 ################
 resource "aws_route_table" "public" {
-  count = var.create_vpc && !var.create_firewall && length(var.public_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && !local.create_firewall && length(var.public_subnets) > 0 ? 1 : 0
 
   vpc_id = local.vpc_id
 
@@ -220,7 +222,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route" "public_internet_gateway" {
-  count = var.create_vpc && !var.create_firewall && var.create_igw && length(var.public_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && !local.create_firewall && var.create_igw && length(var.public_subnets) > 0 ? 1 : 0
 
   route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
@@ -232,7 +234,7 @@ resource "aws_route" "public_internet_gateway" {
 }
 
 resource "aws_route" "public_internet_gateway_ipv6" {
-  count = var.create_vpc && !var.create_firewall && var.create_igw && var.enable_ipv6 && length(var.public_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && !local.create_firewall && var.create_igw && var.enable_ipv6 && length(var.public_subnets) > 0 ? 1 : 0
 
   route_table_id              = aws_route_table.public[0].id
   destination_ipv6_cidr_block = "::/0"
@@ -240,7 +242,7 @@ resource "aws_route" "public_internet_gateway_ipv6" {
 }
 
 resource "aws_route_table" "public_firewall" {
-  count = var.create_vpc && var.create_firewall && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
+  count = var.create_vpc && local.create_firewall && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
 
   vpc_id = local.vpc_id
 
@@ -258,7 +260,7 @@ resource "aws_route_table" "public_firewall" {
 }
 
 resource "aws_route" "public_firewall_endpoint" {
-  count = var.create_vpc && var.create_firewall && var.create_igw && length(var.firewall_subnets) > 0 ? length(var.public_subnets) : 0
+  count = var.create_vpc && local.create_firewall && var.create_igw && length(var.firewall_subnets) > 0 ? length(var.public_subnets) : 0
 
   route_table_id         = aws_route_table.public_firewall[count.index].id
   destination_cidr_block = "0.0.0.0/0"
@@ -269,21 +271,13 @@ resource "aws_route" "public_firewall_endpoint" {
   }
 }
 
-resource "aws_route" "public_firewall_endpoint_ipv6" {
-  count = var.create_vpc && var.create_firewall && var.create_igw && var.enable_ipv6 && length(var.firewall_subnets) > 0 ? local.nat_gateway_count : 0
-
-  route_table_id              = aws_route_table.public_firewall[count.index].id
-  destination_ipv6_cidr_block = "::/0"
-  vpc_endpoint_id             = local.firewall_endpoints[element(var.azs, count.index)]
-}
-
 ##################
 # Firewall routes
 # There are as many routing tables as the number firewall and public subnets
 ##################
 
 resource "aws_route_table" "igw_firewall" {
-  count = var.create_vpc && var.create_firewall && length(var.firewall_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && local.create_firewall && length(var.firewall_subnets) > 0 ? 1 : 0
 
   vpc_id = local.vpc_id
 
@@ -297,7 +291,7 @@ resource "aws_route_table" "igw_firewall" {
 }
 
 resource "aws_route" "firewall_igw" {
-  count = var.create_vpc && var.create_firewall && var.create_igw && length(var.firewall_subnets) > 0 ? length(var.firewall_subnets) : 0
+  count = var.create_vpc && local.create_firewall && var.create_igw && length(var.firewall_subnets) > 0 ? length(var.firewall_subnets) : 0
 
   route_table_id         = aws_route_table.igw_firewall[0].id
   destination_cidr_block = aws_subnet.public[count.index].cidr_block
@@ -310,7 +304,7 @@ resource "aws_route" "firewall_igw" {
 
 
 resource "aws_route_table" "firewall" {
-  count = var.create_vpc && var.create_firewall && length(var.firewall_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && local.create_firewall && length(var.firewall_subnets) > 0 ? 1 : 0
 
   vpc_id = local.vpc_id
 
@@ -327,7 +321,7 @@ resource "aws_route_table" "firewall" {
 }
 
 resource "aws_route" "firewall_internet_gateway" {
-  count = var.create_vpc && var.create_firewall && var.create_igw && length(var.firewall_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && local.create_firewall && var.create_igw && length(var.firewall_subnets) > 0 ? 1 : 0
 
   route_table_id         = aws_route_table.firewall[0].id
   destination_cidr_block = "0.0.0.0/0"
@@ -339,7 +333,7 @@ resource "aws_route" "firewall_internet_gateway" {
 }
 
 resource "aws_route" "firewall_internet_gateway_ipv6" {
-  count = var.create_vpc && var.create_firewall && var.create_igw && var.enable_ipv6 && length(var.firewall_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && local.create_firewall && var.create_igw && var.enable_ipv6 && length(var.firewall_subnets) > 0 ? 1 : 0
 
   route_table_id              = aws_route_table.firewall[0].id
   destination_ipv6_cidr_block = "::/0"
@@ -508,7 +502,7 @@ resource "aws_subnet" "public" {
 # Firewall subnet
 ###################
 resource "aws_subnet" "firewall" {
-  count = var.create_vpc && length(var.firewall_subnets) > 0 && (false == var.one_nat_gateway_per_az || length(var.firewall_subnets) >= length(var.azs)) ? length(var.firewall_subnets) : 0
+  count = var.create_vpc && local.create_firewall && length(var.firewall_subnets) > 0 && (false == var.one_nat_gateway_per_az || length(var.firewall_subnets) >= length(var.azs)) ? length(var.firewall_subnets) : 0
 
   vpc_id                          = local.vpc_id
   cidr_block                      = element(concat(var.firewall_subnets, [""]), count.index)
@@ -1233,28 +1227,28 @@ resource "aws_route_table_association" "intra" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = var.create_vpc && !var.create_firewall && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
+  count = var.create_vpc && !local.create_firewall && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
 
   subnet_id      = element(aws_subnet.public.*.id, count.index)
   route_table_id = aws_route_table.public[0].id
 }
 
 resource "aws_route_table_association" "public_to_firewall" {
-  count = var.create_vpc && var.create_firewall && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
+  count = var.create_vpc && local.create_firewall && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
 
   subnet_id      = element(aws_subnet.public.*.id, count.index)
   route_table_id = aws_route_table.public_firewall[count.index].id
 }
 
 resource "aws_route_table_association" "igw_to_firewall" {
-  count = var.create_vpc && var.create_firewall && length(var.public_subnets) > 0 ? 1 : 0
+  count = var.create_vpc && local.create_firewall && length(var.public_subnets) > 0 ? 1 : 0
 
   gateway_id     = aws_internet_gateway.this[0].id
   route_table_id = aws_route_table.igw_firewall[0].id
 }
 
 resource "aws_route_table_association" "public_firewall" {
-  count = var.create_vpc && var.create_firewall && length(var.firewall_subnets) > 0 ? length(var.firewall_subnets) : 0
+  count = var.create_vpc && local.create_firewall && length(var.firewall_subnets) > 0 ? length(var.firewall_subnets) : 0
 
   subnet_id      = element(aws_subnet.firewall.*.id, count.index)
   route_table_id = aws_route_table.firewall[0].id
@@ -1369,7 +1363,7 @@ resource "aws_default_vpc" "this" {
 ###########
 
 resource "aws_networkfirewall_firewall_policy" "firewall_policy" {
-  count = var.create_firewall ? 1 : 0
+  count = local.create_firewall ? 1 : 0
   name  = "${var.name}-network-policy"
 
   firewall_policy {
@@ -1390,7 +1384,7 @@ resource "aws_networkfirewall_firewall_policy" "firewall_policy" {
 }
 
 resource "aws_networkfirewall_firewall" "firewall" {
-  count               = var.create_firewall ? 1 : 0
+  count               = local.create_firewall ? 1 : 0
   description         = "AWS Network Firewall for ${var.name}"
   name                = var.name
   firewall_policy_arn = aws_networkfirewall_firewall_policy.firewall_policy[0].arn
