@@ -2939,8 +2939,8 @@ variable "firewall_log_destination_type" {
   default     = "CloudWatchLogs"
 }
 
-variable "firewall_log_destination_arn" {
-  description = "The ARN of the CloudWatch log group or S3 bucket or Kinesis Data Stream where Network Firewall Logs will be pushed. If this ARN is a S3 bucket the appropriate permissions need to be set on that bucket's policy. When create_flow_log_cloudwatch_log_group is set to false this argument must be provided."
+variable "firewall_log_destination_name" {
+  description = "The  name of the CloudWatch log group or S3 bucket or Kinesis Data Stream where Network Firewall Logs will be pushed"
   type        = string
   default     = ""
 }

@@ -565,7 +565,7 @@ No Modules.
 | events\_endpoint\_subnet\_ids | The ID of one or more subnets in which to create a network interface for CloudWatch Events endpoint. Only a single subnet within an AZ is supported. If omitted, private subnets will be used. | `list(string)` | `[]` | no |
 | external\_nat\_ip\_ids | List of EIP IDs to be assigned to the NAT Gateways (used in combination with reuse\_nat\_ips) | `list(string)` | `[]` | no |
 | external\_nat\_ips | List of EIPs to be used for `nat_public_ips` output (used in combination with reuse\_nat\_ips and external\_nat\_ip\_ids) | `list(string)` | `[]` | no |
-| firewall\_log\_destination\_arn | The ARN of the CloudWatch log group or S3 bucket or Kinesis Data Stream where Network Firewall Logs will be pushed. If this ARN is a S3 bucket the appropriate permissions need to be set on that bucket's policy. When create\_flow\_log\_cloudwatch\_log\_group is set to false this argument must be provided. | `string` | `""` | no |
+| firewall\_log\_destination\_name | The  name of the CloudWatch log group or S3 bucket or Kinesis Data Stream where Network Firewall Logs will be pushed | `string` | `""` | no |
 | firewall\_log\_destination\_type | Type of Network Firewall log destination. Can be S3, CloudWatchLogs or KinesisDataFirehose | `string` | `"CloudWatchLogs"` | no |
 | firewall\_log\_traffic\_type | The type of traffic to capture. Valid values: ALERT or FLOW | `string` | `"ALERT"` | no |
 | firewall\_route\_table\_tags | Additional tags for the firewall route tables | `map(string)` | `{}` | no |

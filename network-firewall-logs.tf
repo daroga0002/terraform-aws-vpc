@@ -2,12 +2,12 @@ locals {
   enable_firewall_log = var.create_firewall && var.enable_firewall_log
 
   firewall_log_destination = var.firewall_log_destination_type == "S3" ? {
-    bucketName = var.firewall_log_destination_arn,
+    bucketName = var.firewall_log_destination_name,
     prefix     = "/firewall"
     } : var.firewall_log_destination_type == "KinesisDataFirehose" ? {
-    deliveryStream = var.firewall_log_destination_arn
+    deliveryStream = var.firewall_log_destination_name
     } : {
-    logGroup = var.firewall_log_destination_arn
+    logGroup = var.firewall_log_destination_name
   }
 }
 
@@ -22,5 +22,4 @@ resource "aws_networkfirewall_logging_configuration" "firewall" {
     }
   }
 }
-
 

@@ -30,17 +30,25 @@ Note that this example may create resources which can cost money (AWS Elastic IP
 
 ## Providers
 
-No provider.
+| Name | Version |
+|------|---------|
+| aws | >= 3.18 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| vpc | ../../ |  |
+| vpc | ../.. |  |
 
 ## Resources
 
-No resources.
+| Name |
+|------|
+| [aws_availability_zones](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) |
+| [aws_elb_service_account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/elb_service_account) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+| [aws_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) |
+| [aws_s3_bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) |
 
 ## Inputs
 
